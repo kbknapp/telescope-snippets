@@ -1,36 +1,59 @@
-# telescope-snippets
-This is extensions of [Telescope](https://github.com/nvim-telescope/telescope.nvim) that use [snippets.nvim](https://github.com/norcalli/snippets.nvim)
-![Peek 2021-06-12 00-18](https://user-images.githubusercontent.com/17103748/121764707-e57e2a00-cb13-11eb-890e-78a7ec93e79b.gif)
+# `telescope-luasnip`
+
+**THIS PLUGIN IS A WORK IN PROGRES AND DOES NOT FUNCTION YET**
+
+Use [Telescope][2] to search your [LuaSnip][3]
 
 # Installations
-```lua
 
---install telescope
-use 'nvim-lua/popup.nvim'
-use 'nvim-lua/plenary.nvim'
-use 'nvim-telescope/telescope.nvim'
+Using [Vim Plug][5]:
+
+```lua
+-- Install telescope
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+
+-- Install LuaSnips
+Plug 'L3MON4D3/LuaSnip'
 
 --install this integration
-use 'Maverun/telescope-snippets'
+Plug 'kbknapp/telescope-luasnip'
 ```
 
 # Setup
 
-Can done setup by 
+Load the extension:
 
 ```lua
-require('telescope').load_extension('snippets')
+-- Ensure LuaSnip is setup
+require('luasnip').setup()
+
+-- Ensure telescope is setup
+require('telescope').setup()
+
+-- Load the telescope extension
+require('telescope').load_extension('luasnip')
 ```
 
-and to run it
+# Usage
 
 ```viml
 :Telescope snippets
 ```
 
-# Inspire
+# License
 
-I got inspire by [telescope-ultisnips.nvim](https://github.com/fhill2/telescope-ultisnips.nvim)
-Although it may not be much but I figure I should create similar one with currently snippets I am using while learning how to make plugins and lua for a first time.
+This project is licensed under the terms of the [GPLv2][4]. 
+See `LICENSE-GPL` in this repository for details.
 
-It is not perfect, there is quite a few problem that could cause but I have no idea how to face it
+# Inspiration
+
+Forked/inspire by [telescope-snippets][1]
+
+[//]:
+
+[1]: https://github.com/Maverun/telescope-snippets
+[2]: https://github.com/nvim-telescope/telescope.nvim
+[3]: https://github.com/L3MON4D3/LuaSnip
+[4]: https://opensource.org/licenses/gpl-2.0.php

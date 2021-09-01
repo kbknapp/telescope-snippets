@@ -1,10 +1,10 @@
  --Copyright (C) Maverun 2021
 local has_telescope, telescope = pcall(require, "telescope")
-local has_snippet, snippet = pcall(require,"snippets")
+local has_snippet, snippet = pcall(require,"luasnip")
 if not has_telescope then
     error("This plugins requires nvim-telescope/telescope.nvim")
 elseif not has_snippet then
-    error("This plugin requires norcalli/snippets.nvim")
+    error("This plugin requires L3MON4D3/LuaSnip")
 end
 
 local actions = require("telescope.actions")
@@ -14,21 +14,44 @@ local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
 local entry_display = require("telescope.pickers.entry_display")
 local conf = require("telescope.config").values
-local U = require('snippets.common')
+local types = require("luasnip.util.types")
+
+local ls = require("luasnip")
+
+ls.config.set_config({
+	history = true,
+	-- Update more often, :h events for more info.
+	updateevents = "TextChanged,TextChangedI",
+	ext_opts = {
+		[types.choiceNode] = {
+			active = {
+				virt_text = { { "choiceNode", "Comment" } },
+			},
+		},
+	},
+	-- treesitter-hl has 100, use something higher (default is 200).
+	ext_base_prio = 300,
+	-- minimal increase in priority.
+	ext_prio_increase = 1,
+	enable_autosnippets = true,
+})
 
 local function get_snippet_list()
 
     local snip_list = {}
     local function loopcreate(obj,ft)
-        for k,v in pairs(snippet.snippets[ft]) do
-            table.insert(obj,{
-                filetype = ft:gsub('_',''),
-                name = k,
-            })
-        end
+        if not ft or ft == '' then return end
+	local snip = ls.snippets[ft]
+	if not snip or snip == '' then return end
+	for k,v in pairs(ls.snippets[ft]) do
+	    table.insert(obj,{
+		filetype = ft:gsub('_',''),
+		name = k,
+	    })
+	end
     end
     --making sure filetype is there or else error
-    if vim.bo.filetype ~= '' and snippet.snippets[vim.bo.filetype] ~= nil then
+    if vim.bo.filetype ~= '' and ls.snippets[vim.bo.filetype] ~= nil then
         loopcreate(snip_list,vim.bo.filetype)
     end
     loopcreate(snip_list,'_global')
@@ -37,9 +60,9 @@ end
 
 local function preview_advance(entry)
     --getting current snippets template
-    local snip = snippet.lookup_snippet(entry.value.filetype,entry.value.name)
+    local snip = ls.lookup_snippet(entry.value.filetype,entry.value.name)
     --we will evaulate them and get how many inputs are they need to fill
-    local evaluator = U.evaluate_snippet(snip)
+    local evaluator = ls.parser.parse_snippet(snip.name, snip.value)
     local resolved_inputs = {}
     for i = 0,#evaluator.inputs + 1 do
         local ph  = "Placeholders"
@@ -104,4 +127,4 @@ local snippets = function(opts)
 end -- end custom function
 
 
-return telescope.register_extension({ exports = { snippets = snippets } })
+return telescope.register_extension({ exports = { luasnip = snippets } })
